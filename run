@@ -1,5 +1,3 @@
-#!/usr/bin/python3
+#!/bin/bash
 
-from core import main
-
-main.run();
+python3 -c "from core import main; main.run();"
