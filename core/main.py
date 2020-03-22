@@ -1,6 +1,7 @@
 
 import getpass;
 from email_manager.connection import Connection
+from email_manager.imap_connection import IMAP_Connection
 
 # TMP test function
 
@@ -24,7 +25,28 @@ def test():
 	# send to yourself
 	c.send2(email, ":)", filename, open(filename, "rb").read());
 
-	print("Email sent");
+	print("Email not sent");
+
+
+	imap_con = IMAP_Connection(email, password)
+	print ("Trying to establish IMAP connection...")
+	if imap_con.login() == False:
+		print("Error while trying to log in")
+		return
+	
+	print("Connection established!")
+
+	print("Getting email headers...")
+	header_list = imap_con.get_email_headers_info()
+
+	print("Checking last received email:")
+	print(header_list[-1])
+
+	if header_list[-1]["Subject"] == ":)":
+		print("Getting files from happy email...")
+		
+		imap_con.get_specific_email_attachments(header_list[-1]["Number"])
+		print("File(s) received!")
 
 
 def run():
