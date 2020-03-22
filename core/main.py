@@ -25,7 +25,7 @@ def test():
 	# send to yourself
 	c.send2(email, ":)", filename, open(filename, "rb").read());
 
-	print("Email not sent");
+	print("Email sent");
 
 
 	imap_con = IMAP_Connection(email, password)
