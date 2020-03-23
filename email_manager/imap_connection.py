@@ -91,4 +91,5 @@ class IMAP_Connection:
 					fp.close()
 		return True
 
-			
+	def close(self):
+		self.mail.logout();			

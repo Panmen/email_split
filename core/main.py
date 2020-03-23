@@ -1,6 +1,11 @@
+import screens.login_screen as login_screen
+import screens.option_screen as option_screen
+import core.g as g
 
+
+#tmp for test function
 import getpass;
-from email_manager.connection import Connection
+from email_manager.smtp_connection import SMTP_Connection
 from email_manager.imap_connection import IMAP_Connection
 
 # TMP test function
@@ -50,9 +55,17 @@ def test():
 
 
 def run():
-	print("Running ... ")
+	#print("Running ... ")
 	
-	test();
-	
-	print("Ended.")
+	login_screen.run();
+
+	option_screen.run();
+
+	if not(g.smtp_conn is None):
+		g.smtp_conn.close();	
+
+	if not(g.imap_conn is None):
+		g.imap_conn.close();	
+
+	#print("Ended.")
 
