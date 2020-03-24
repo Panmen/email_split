@@ -47,19 +47,6 @@ class IMAP_Connection:
 		id_list = mail_ids.split()
 		return id_list
 
-	def get_email_headers_info(self):
-	#Returns a list of dictionaries with Number, ID, Sender, Subject
-		header_list = []
-
-		id_list = self.get_email_list()
-		for num in id_list:
-			rv, data = self.mail.fetch(num, '(BODY[HEADER])')
-			raw_header = data[0][1]
-			mailinfo = extract_info(raw_header)
-			mailinfo["Number"] = num
-			header_list.append(mailinfo)
-		return header_list
-
 	def get_specific_email_header_info(self, num):
 	#Returns a dictionary with Number, ID, Sender, Subject
 		rv, data = self.mail.fetch(num, '(BODY[HEADER])')
@@ -68,6 +55,16 @@ class IMAP_Connection:
 		mailinfo["Number"] = num
 		return mailinfo
 		
+	def get_email_headers_info(self):
+	#Returns a list of dictionaries with Number, ID, Sender, Subject
+		header_list = []
+
+		id_list = self.get_email_list()
+		for num in id_list:
+			mailinfo = self.get_email_header_info(num)
+			header_list.append(mailinfo)
+		return header_list
+
 	def get_specific_email_attachments(self, num):
 	#Saves email attachments to ./temporary/ if not already there
 		rv, data = self.mail.fetch(num, '(RFC822)')
