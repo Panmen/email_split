@@ -61,7 +61,7 @@ class IMAP_Connection:
 
 		id_list = self.get_email_list()
 		for num in id_list:
-			mailinfo = self.get_email_header_info(num)
+			mailinfo = self.get_specific_email_header_info(num)
 			header_list.append(mailinfo)
 		return header_list
 
