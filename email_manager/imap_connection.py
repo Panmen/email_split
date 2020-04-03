@@ -11,14 +11,16 @@ imap_port = "993"
 def extract_info(raw_header):
 	mail_header = raw_header.decode('utf-8')
 	mailinfo = {
+		# WHOLE HEADER useful for debugging
+		"WHOLE HEADER": mail_header,
 		"ID": mail_header.split("Message-ID: ", 1)[1].split("\r\n", 1)[0],
 		"Sender": mail_header.split("From: ", 1)[1].split("\r\n", 1)[0],
-		
-	# TODO
-	# "AttachmentList": mail_header.split("\nContent-Disposition: attachment; filename= ")[1:]
 	}
+	# Add these if they exist
 	if len(mail_header.split("Subject: ", 1)) == 2:
 		mailinfo["Subject"] = mail_header.split("Subject: ", 1)[1].split("\r\n", 1)[0]
+	if len(mail_header.split("Attachments: ", 1)) == 2:	
+		mailinfo["Attachments"] = mail_header.split("Attachments: ", 1)[1].split("\r\n", 1)[0]
 	return mailinfo
 
 class IMAP_Connection:
