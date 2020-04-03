@@ -86,29 +86,24 @@ class SMTP_Connection:
 		#final_msg.attach(MIMEText("this is the body text"))
 
 		# Split in parts of PART_SIZE bytes
-		part_list = []
 		i = 0
 		while len(byte_data[i:]) > PART_SIZE:
 			part = MIMEBase("application", "octet-stream")
 			part.set_payload(byte_data[i:i+PART_SIZE])
 			encoders.encode_base64(part)
 			part_name = '{0:04d}'.format(int(i/PART_SIZE)) + filename + ".part"
-			part_list.append(part_name)
 			part.add_header(
 				"Content-Disposition",
 				f"attachment; filename= {part_name}",
 			);
-			#final_msg += part.as_string()
 			final_msg.attach(part)
 			i += PART_SIZE
-			print("iteration number: " + str(i/PART_SIZE))
 
 		# Add the last part
 		part = MIMEBase("application", "octet-stream")
 		part.set_payload(byte_data[i:])
 		encoders.encode_base64(part)
 		part_name = '{0:04d}'.format(int(i/PART_SIZE)) + filename + ".part"
-		part_list.append(part_name)
 		part.add_header(
 			"Content-Disposition",
 			f"attachment; filename= {part_name}",
@@ -117,15 +112,11 @@ class SMTP_Connection:
 
 
 		lst_str = "0000" + '{0:04d}'.format(int(i/PART_SIZE)) + filename
-
 		final_msg['Attachments'] = lst_str
-
 		
-		print(final_msg.as_string())
-		input()
-		
-
 		self.connection.sendmail(self.email, receiver_email, final_msg.as_string());
+
+		return
 
 
 
