@@ -47,6 +47,14 @@ class IMAP_Connection:
 		id_list = mail_ids.split()
 		return id_list
 
+	def get_email_list_by_subject(self, subj):
+		self.mail.select()
+
+		rv, data = self.mail.search(None, 'SUBJECT "' + subj + '"') 
+		mail_ids = data[0]
+		id_list = mail_ids.split()
+		return id_list
+
 	def get_specific_email_header_info(self, num):
 	#Returns a dictionary with Number, ID, Sender, Subject
 		rv, data = self.mail.fetch(num, '(BODY[HEADER])')
@@ -87,6 +95,27 @@ class IMAP_Connection:
 					fp.write(part.get_payload(decode=True))
 					fp.close()
 		return True
+
+
+	def get_specific_email_attachments_data(self, num):
+	#Saves email attachments to ./temporary/ if not already there
+		rv, data = self.mail.fetch(num, '(RFC822)')
+		raw_email = data[0][1]
+		
+		raw_email_string = raw_email.decode('utf-8')
+		email_message = email.message_from_string(raw_email_string)
+		
+		for part in email_message.walk():
+			if part.get_content_maintype() == 'multipart':
+				continue
+			if part.get('Content-Disposition') is None:
+				continue
+			fileName = part.get_filename()
+
+			if bool(fileName):
+				return part.get_payload(decode=True);
+
+		return;
 
 	def close(self):
 		self.mail.logout();			
