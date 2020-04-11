@@ -6,6 +6,8 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+from os import path
+
 smtp_server = "smtp.gmail.com"
 port = 587  # For starttls
 
@@ -91,5 +93,32 @@ class SMTP_Connection:
 		self.connection.quit();
 
 
+	# SEND EMAIL WITH ONLY ONE ATTACHMENT
+	# receiver_mail : the mail of the recipient
+	# subj : the subject of the mail
+	# file_path : path to the file we wish to send
+	def send3(self, receiver_email, subj, file_path):
+
+		if('\n' in subj):
+			 raise ValueError("Custom Exception : Subject cannot have new-lines \\n");
+
+		with open(file_path, 'rb') as f:
+			file_data = f.read()
+			file_name = path.split(file_path)[1]
+
+			# encode file and add hedaers
+			part = MIMEBase("application", "octet-stream")
+			part.set_payload(file_data);
+			encoders.encode_base64(part);
+			part.add_header(
+				"Content-Disposition",
+				f"attachment; filename={file_name};"
+			);
 
 
+			final_msg = "Subject: " + subj + "\n";
+			final_msg += part.as_string();
+
+			self.connection.sendmail(self.email, receiver_email, final_msg);
+
+		return
