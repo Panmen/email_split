@@ -112,7 +112,7 @@ def download_file(name, destination = 'temporary/'):
 	return True
 
 
-def upload(filename):
+def upload(filename, destination_email):
 	# TODO
 	pass
 
