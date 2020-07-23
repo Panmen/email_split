@@ -1,4 +1,5 @@
 from os import path
+from datetime import datetime;
 import core.g as g 
 
 
@@ -81,17 +82,23 @@ def login(email, password):
 # if it was successful it returns True; False otherwise
 def download_file(name, destination = 'temporary/'):
 
-	count = 0;
-	print("%04d%s" % (count, name));
-	l = g.imap_conn.get_email_list_by_subject("%04d%s" % (count, name));
 
-	if(len(l) == 0):
-		print("File " + name + " not found!");
+	if(g.imap_conn is None):
+		print("There is no IMAP connection");
 		return False;
 
 	if(not path.exists(destination)):
 		print("Destimation path does not exist!");
 		return False;
+
+	count = 0;
+	print("Searching for" + "ES_%04d%s" % (count, name));
+	l = g.imap_conn.get_email_list_by_subject("ES_%04d%s" % (count, name));
+
+	if(len(l) == 0):
+		print("File " + name + " not found in inbox!");
+		return False;
+
 
 	f = open(destination + name, 'wb');
 	
@@ -103,7 +110,7 @@ def download_file(name, destination = 'temporary/'):
 		
 		count = count + 1;	
 		print("searching");
-		l = g.imap_conn.get_email_list_by_subject("%04d%s" % (count, name));
+		l = g.imap_conn.get_email_list_by_subject("ES_%04d%s" % (count, name));
 		print("searched");
 
 	f.close();
@@ -112,11 +119,73 @@ def download_file(name, destination = 'temporary/'):
 	return True
 
 
-def upload(filename, destination_email):
-	# TODO
-	pass
+#send file to destination_email
+# returns True if successful
+def send_file(file_path, destination_email):
+	CHUNK_SIZE = 14000000; # ~ 14MB
+
+
+	if(g.smtp_conn is None):
+		print("There is no SMTP connection");
+		return False;
+	
+	if(not path.exists(file_path)):
+		print("Path " + file_path +  " does not exist!");
+		return False;
+
+	if(not path.isfile(file_path)):
+		print(file_path + " is not a file!");
+		return False;
+
+	f = open(file_path, 'rb');
+
+
+	file_full_name = path.basename(file_path);
+	file_name_parts = file_full_name.rsplit(".", 1); # split at last occurrence
+	time_stamp = datetime.now().strftime("_%d-%m-%Y_%H-%M-%S"); 
+	file_name = file_name_parts[0] + time_stamp + "." + file_name_parts[1];
+
+
+	# SEND beacon email to be used by list function
+	subject = "ES_BEACON";
+	body = file_name;
+	g.smtp_conn.send(destination_email, subject, body);	
+
+	i = 0;
+	chunk = f.read(CHUNK_SIZE);
+	
+	while(len(chunk) > 0): # while there are still data
+
+		print("Sending chunk #%d, len(chunk)=%d" % (i, len(chunk)));
+
+		#send data
+		filename = "data";
+		subject = "ES_%04d%s" % (i, file_name);
+		g.smtp_conn.send2(destination_email, subject, filename, chunk);	
+
+		# read next chunck and i++
+		i = i + 1;
+		chunk = f.read(CHUNK_SIZE);
+
+
+
+	f.close();
+	print("Uploaded successfully.")
+	return True;
 
 def list_available():
-	# TODO
-	pass
+
+	print("Searching for available files");
+
+	
+	id_list = g.imap_conn.get_email_list_by_subject("ES_BEACON");
+
+	files = [];
+
+	for num in id_list:
+		files.append(g.imap_conn.get_email_body(num).rstrip());
+
+	print(files);
+
+	return files;
 

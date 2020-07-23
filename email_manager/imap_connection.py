@@ -73,6 +73,20 @@ class IMAP_Connection:
 			header_list.append(mailinfo)
 		return header_list
 
+	def get_email_body(self, num):
+		typ, data = self.mail.fetch(num,'(RFC822)');
+
+		raw_email_string = data[0][1].decode('utf-8')
+		email_message = email.message_from_string(raw_email_string)
+		
+
+		for part in email_message.walk():
+			if part.get_content_type() == "text/plain":
+				body = part.get_payload(decode=True)
+				return body.decode('utf-8');
+
+		return ''
+
 	def get_specific_email_attachments(self, num):
 	#Saves email attachments to ./temporary/ if not already there
 		rv, data = self.mail.fetch(num, '(RFC822)')

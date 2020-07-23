@@ -62,7 +62,7 @@ class SMTP_Connection:
 	# receiver_mail : the mail of the recipient
 	# subj : the subject of the mail
 	# finename : the name of the file
-	# byte_data : tupe byte ex byte_data = open("test.txt", "rb").read();
+	# byte_data : type byte ex byte_data = open("test.txt", "rb").read();
 	def send2(self, receiver_email, subj, filename, byte_data):
 
 		if('\n' in subj):
