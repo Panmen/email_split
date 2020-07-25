@@ -1,7 +1,9 @@
-
-
+from core.utilities import *; 
 
 def run():
 	
-	print("Nothing Implemented for receiving yet.");
-	# TODO - add receiving functionality
+	name = input("Enter the filename : ")
+	download_file(name);
+
+
+
