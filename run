@@ -1,3 +1,7 @@
 #!/bin/bash
 
-python3 -c "from core import main; main.run();"
+if [ "$1" = -gui ]; then
+	python3 -c "from core import main; main.run_gui();"
+else
+	python3 -c "from core import main; main.run();"
+fi

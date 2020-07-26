@@ -34,7 +34,7 @@ def try_easy_login():
 		sender_email = lines[0][:-1];
 		password = lines[1][:-1];
 
-		return login(sender_email, password);
+		return login(sender_email, password), sender_email;
 
 	return False;
 	

@@ -1,6 +1,7 @@
 import screens.login_screen as login_screen
 import screens.option_screen as option_screen
 import core.g as g
+import gui.QtUI as QtUI
 
 
 #tmp for test function
@@ -55,6 +56,9 @@ def test():
 
 
 
+
+def run_gui():
+	QtUI.run()	
 
 
 def run():
